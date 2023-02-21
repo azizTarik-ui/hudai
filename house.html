@@ -36,9 +36,16 @@
       // });
 
 
+      //lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      directionalLight.position.set(1, 1, 1);
+      scene.add(directionalLight);
+
+
       //house structure
-      
-    
       const renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
@@ -77,6 +84,7 @@
       const material = new THREE.MeshBasicMaterial({ map: cTexture });
       const cube = new THREE.Mesh(geometry, material);
       cube.rotation.x = 0.25;
+      cube.castShadow = true;
       scene.add(cube);
 
       //house roof
@@ -102,6 +110,7 @@
       roof.position.x = -0.02;
       roof.position.y = 2.5;
       roof.rotation.y = Math.PI / 4; 
+      roof.castShadow = true;
       cube.add(roof);
 
       //house door
@@ -110,6 +119,7 @@
       const doorMaterial = new THREE.MeshBasicMaterial({ map: doorOfHouse });
       const door = new THREE.Mesh(doorGeometry, doorMaterial);
       door.position.set(0, -0.71, 1.51);
+      door.castShadow = true;
       cube.add(door);
       
 
@@ -207,9 +217,8 @@
       window101.position.set(0, -0.375, -0.727);
       bCube.add(window101);
 
-      var window12 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry11 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
-      const windowMaterial11 = new THREE.MeshPhongMaterial({ map: window12 });
+      const windowMaterial11 = new THREE.MeshPhongMaterial({ map: window1 });
       const window111 = new THREE.Mesh(windowGeometry11, windowMaterial11);
       window111.position.set(0, 2, -0.727);
       bCube.add(window111);
@@ -218,12 +227,7 @@
 
       
 
-      //lighting
-      const color = 0xFFFFFF;
-      const intensity = 1;
-      const distance = 100;
-      const light = new THREE.AmbientLight(color, intensity);   
-      scene.add(light);
+      
 
 
       //renderer.render(scene, camera);
@@ -302,6 +306,12 @@
         requestAnimationFrame(animate);
         // uniforms["u_time"].value = (Date.now() - start)/1000;
         // cube.rotation.y += 0.01;
+        //camera.position.x = 5 * Math.sin(Date.now() * 0.001);
+        //camera.position.z = 5 * Math.sin(Date.now() * 0.001);
+        //camera.position.x = 3 * Math.sin(Date.now() * 0.001);
+        //camera.position.z = 5 * Math.sin(Date.now() * 0.001);
+        directionalLight.position.x = 5 * Math.sin(Date.now() * 0.001);
+        directionalLight.position.z = 5 * Math.sin(Date.now() * 0.001);
         renderer.render(scene, camera);
       }
 
