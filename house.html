@@ -11,165 +11,263 @@
   </head>
   <body>
     <script src="js/three.js"></script>
+
+<!-- ShaderMaterial -->
+    <script id="vertexShader" type="x-shader/x-vertex">
+        varying vec3 v_color;
+        void main()	{
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            v_color = position;
+        }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        uniform float u_time;
+        varying vec3 v_color;
+        void main()	{
+           gl_FragColor = vec4(abs(cos(v_color+u_time)), 1.0);
+        }
+    </script>
+
+    <!-- creating scene -->
     <script>
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
-        75,
+        100,
         window.innerWidth / window.innerHeight,
         0.1,
         1000
       );
 
+      // var start = Date.now();
+      // uniforms = {
+      //     u_time: { type: "f", value: (Date.now() - start)/1000 }
+      // };
+
+      // material = new THREE.ShaderMaterial({
+      //     uniforms: uniforms,
+      //     vertexShader: document.getElementById('vertexShader').textContent,
+      //     fragmentShader: document.getElementById('fragmentShader').textContent
+
+      // });
+
+
+      //house structure
       const renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
-
       const geometry = new THREE.BoxGeometry(3, 3, 3);
-      const material = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+      const positionAttribute = geometry.getAttribute('position');
+      const colors = [];
+      const colorWall = new THREE.Color();
+      for (let i = 0; i < positionAttribute.count; i += 6) {
+
+          colorWall.setHex(0xffffff * Math.random());
+
+          colors.push(colorWall.r, colorWall.g, colorWall.b);
+          colors.push(colorWall.r, colorWall.g, colorWall.b);
+          colors.push(colorWall.r, colorWall.g, colorWall.b);
+
+          colors.push(colorWall.r, colorWall.g, colorWall.b);
+          colors.push(colorWall.r, colorWall.g, colorWall.b);
+          colors.push(colorWall.r, colorWall.g, colorWall.b);
+      } 
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      const material = new THREE.MeshBasicMaterial({ vertexColors: true });
       const cube = new THREE.Mesh(geometry, material);
+      cube.rotation.x = 0.25;
       scene.add(cube);
 
-      var doorofHouse = new THREE.TextureLoader().load("door.jpg");
+      //house roof
+      const roofGeometry = new THREE.ConeGeometry(3, 3, 4);
+      const roofMaterial = new THREE.MeshPhongMaterial({ color: 0x00ffff });
+      const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+      roof.position.x = -0.02;
+      roof.position.y = 2.5;
+      roof.rotation.y = Math.PI / 4; 
+      cube.add(roof);
+
+      //house door
+      var doorOfHouse = new THREE.TextureLoader().load("./images/door.png");
       const doorGeometry = new THREE.BoxGeometry(0.8, 1.45, 0);
-      const doorMaterial = new THREE.MeshPhongMaterial({
-        map: doorofHouse,
-      });
+      const doorMaterial = new THREE.MeshBasicMaterial({ map: doorOfHouse });
       const door = new THREE.Mesh(doorGeometry, doorMaterial);
       door.position.set(0, -0.71, 1.51);
       cube.add(door);
       
 
-      var window1 = new THREE.TextureLoader().load("house.jpg");
+      //house windows
+      var window1 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry1 = new THREE.BoxGeometry(0.5, 0.75, 1);
-      const windowMaterial1 = new THREE.MeshPhongMaterial({
-        map: window1
-      });
+      const windowMaterial1 = new THREE.MeshPhongMaterial({ map: window1 });
       const window11 = new THREE.Mesh(windowGeometry1, windowMaterial1);
       window11.position.set(1, -0.375, 1.0001);
       cube.add(window11);
 
-      var window2 = new THREE.TextureLoader().load("house.jpg");
+      var window2 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry2 = new THREE.BoxGeometry(0.5, 0.75, 1);
-      const windowMaterial2 = new THREE.MeshPhongMaterial({
-        map: window2
-      });
+      const windowMaterial2 = new THREE.MeshPhongMaterial({ map: window2 });
       const window22 = new THREE.Mesh(windowGeometry2, windowMaterial2);
       window22.position.set(-1, -0.375, 1.0001);
       cube.add(window22);
 
-      var window3 = new THREE.TextureLoader().load("house.jpg");
+      var window3 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry3 = new THREE.BoxGeometry(0.5, 0.75, 0.55);
-      const windowMaterial3 = new THREE.MeshPhongMaterial({
-        map: window3
-      });
+      const windowMaterial3 = new THREE.MeshPhongMaterial({ map: window3 });
       const window33 = new THREE.Mesh(windowGeometry3, windowMaterial3);
       window33.position.set(-1.2501, -0.375, -0.1);
       cube.add(window33);
 
-      var window4 = new THREE.TextureLoader().load("house.jpg");
+      var window4 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry4 = new THREE.BoxGeometry(0.5, 0.75, 0.55);
-      const windowMaterial4 = new THREE.MeshPhongMaterial({
-        map: window4
-      });
+      const windowMaterial4 = new THREE.MeshPhongMaterial({ map: window4 });
       const window44 = new THREE.Mesh(windowGeometry4, windowMaterial4);
       window44.position.set(1.2501, -0.375, 0.1);
       cube.add(window44);
 
-      var window5 = new THREE.TextureLoader().load("house.jpg");
+      var window5 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry5 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
-      const windowMaterial5 = new THREE.MeshPhongMaterial({
-        map: window5
-      });
+      const windowMaterial5 = new THREE.MeshPhongMaterial({ map: window5 });
       const window55 = new THREE.Mesh(windowGeometry5, windowMaterial5);
       window55.position.set(0, -0.375, -1.2251);
       cube.add(window55);
 
+
+      //building
+      const bGeometry = new THREE.BoxGeometry(2, 7, 2);
+      const positionAttributeB = geometry.getAttribute('position');
+      const colorsB = [];
+      const colorWallB = new THREE.Color();
+      for (let i = 0; i < positionAttributeB.count; i += 6) {
+
+          colorWall.setHex(0xffffff * Math.random());
+
+          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
+          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
+          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
+
+          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
+          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
+          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
+      } 
+      bGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      const bMaterial = new THREE.MeshBasicMaterial({ vertexColors: true });
+      const bCube = new THREE.Mesh(bGeometry, bMaterial);
+      bCube.rotation.x = 0.25;
+      scene.add(bCube);
+      bCube.position.set(8, 1, 0);
+
+      var doorOfHouse = new THREE.TextureLoader().load("./images/door.png");
+      const doorBGeometry = new THREE.BoxGeometry(0.8, 1.75, 0);
+      const doorBMaterial = new THREE.MeshBasicMaterial({ map: doorOfHouse });
+      const bDoor = new THREE.Mesh(doorBGeometry, doorBMaterial);
+      bDoor.position.set(0.05, -2.55, 1.001);
+      bCube.add(bDoor);
+
+      var window6 = new THREE.TextureLoader().load("./images/window.jpg");
+      const windowGeometry6 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
+      const windowMaterial6 = new THREE.MeshPhongMaterial({ map: window6 });
+      const window66 = new THREE.Mesh(windowGeometry6, windowMaterial6);
+      window66.position.set(-0.702, -0.375, 0);
+      bCube.add(window66);
+
+      var window7 = new THREE.TextureLoader().load("./images/window.jpg");
+      const windowGeometry7 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
+      const windowMaterial7 = new THREE.MeshPhongMaterial({ map: window7 });
+      const window77 = new THREE.Mesh(windowGeometry7, windowMaterial7);
+      window77.position.set(-0.702, 2, 0);
+      bCube.add(window77);
+
+      var window8 = new THREE.TextureLoader().load("./images/window.jpg");
+      const windowGeometry8 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
+      const windowMaterial8 = new THREE.MeshPhongMaterial({ map: window8 });
+      const window88 = new THREE.Mesh(windowGeometry8, windowMaterial8);
+      window88.position.set(0.702, -0.375, 0);
+      bCube.add(window88);
+
+      var window9 = new THREE.TextureLoader().load("./images/window.jpg");
+      const windowGeometry9 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
+      const windowMaterial9 = new THREE.MeshPhongMaterial({ map: window7 });
+      const window99 = new THREE.Mesh(windowGeometry9, windowMaterial9);
+      window99.position.set(0.702, 2, 0);
+      bCube.add(window99);
+
+      var window10 = new THREE.TextureLoader().load("./images/window.jpg");
+      const windowGeometry10 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
+      const windowMaterial10 = new THREE.MeshPhongMaterial({ map: window10 });
+      const window101 = new THREE.Mesh(windowGeometry10, windowMaterial10);
+      window101.position.set(0, -0.375, -0.727);
+      bCube.add(window101);
+
+      var window12 = new THREE.TextureLoader().load("./images/window.jpg");
+      const windowGeometry11 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
+      const windowMaterial11 = new THREE.MeshPhongMaterial({ map: window12 });
+      const window111 = new THREE.Mesh(windowGeometry11, windowMaterial11);
+      window111.position.set(0, 2, -0.727);
+      bCube.add(window111);
+
+      
+
+      
+
+      //lighting
       const color = 0xFFFFFF;
-        const intensity = 10;
-        const distance = 100;
-        // const light = new THREE.AmbientLight(color, intensity);
+      const intensity = 1;
+      const distance = 100;
+      const light = new THREE.AmbientLight(color, intensity);   
+      scene.add(light);
 
-        const light = new THREE.PointLight(color, intensity, distance);
-        light.position.set(50, 50, 50);
-        
 
-        // const light = new THREE.DirectionalLight(color, intensity, distance);
-        // scene.add(light);
+      //renderer.render(scene, camera);
 
-        scene.add(light);
 
-        renderer.render(scene, camera);
-
+      //camera perspective
+      camera.position.x = 3;
       camera.position.y = 0.65;
       camera.position.z = 5;
 
-      function animate() {
-        requestAnimationFrame(animate);
-        //cube.rotation.y += 0.01;
-        rotateFigure();
-        renderer.render(scene, camera);
+
+      //mouse interaction
+      let onmousedown = function(){
+          cube.rotation.y += 5;
+          renderer.render(scene, camera);
       }
 
-      var onmousedown = function () {
-        cube.rotation.y += 0.1;
-        renderer.render(scene, camera);
-      };
-      document.addEventListener("click", onmousedown);
+      document.addEventListener("click", onmousedown, false);
 
-
+      //keyboard interaction
       const arrowLeftKeyCode = 37;
       const arrowUpKeyCode = 38;
       const arrowRightKeyCode = 39;
       const arrowDownKeyCode = 40;
 
-      let isArrowLeftKeyPressed = false;
-let isArrowRightKeyPressed = false;
-let isArrowUpKeyPressed = false;
-let isArrowDownKeyPressed = false;
+      document.addEventListener('keydown', event => {
+        if (event.keyCode == arrowLeftKeyCode) {
+            cube.rotation.y -= 0.05;
+            bCube.rotation.y -= 0.05;
+        }
+        else if (event.keyCode == arrowRightKeyCode) {
+            cube.rotation.y += 0.05;
+            bCube.rotation.y += 0.05;
+        }
+        else if (event.keyCode == arrowUpKeyCode) {
+            cube.rotation.x -= 0.05;
+            bCube.rotation.x -= 0.05;
+        }
+        else if (event.keyCode == arrowDownKeyCode) {
+            cube.rotation.x += 0.05;
+            bCube.rotation.x += 0.05;
+        }
+      });
 
-document.addEventListener('keydown', event => {
-    if (event.keyCode == arrowLeftKeyCode) {
-        isArrowLeftKeyPressed = true;
-    }
-    else if (event.keyCode == arrowRightKeyCode) {
-        isArrowRightKeyPressed = true;
-    }
-    else if (event.keyCode == arrowUpKeyCode) {
-        isArrowUpKeyPressed = true;
-    }
-    else if (event.keyCode == arrowDownKeyCode) {
-        isArrowDownKeyPressed = true;
-    }
-});
 
-document.addEventListener('keyup', event => {
-    if (event.keyCode == arrowLeftKeyCode) {
-        isArrowLeftKeyPressed = false;
-    }
-    else if (event.keyCode == arrowRightKeyCode) {
-        isArrowRightKeyPressed = false;
-    }
-    else if (event.keyCode == arrowUpKeyCode) {
-        isArrowUpKeyPressed = false;
-    }
-    else if (event.keyCode == arrowDownKeyCode) {
-        isArrowDownKeyPressed = false;
-    }
-});
-function rotateFigure() {
-    if (isArrowLeftKeyPressed) {
-        cube.rotation.y -= 0.01;
-    }
-    else if (isArrowRightKeyPressed) {
-        cube.rotation.y += 0.01;
-    }
-    else if (isArrowUpKeyPressed) {
-        cube.rotation.x -= 0.01;
-    }
-    else if (isArrowDownKeyPressed) {
-        cube.rotation.x += 0.01;
-    }
-}
+      //animation
+      function animate() {
+        requestAnimationFrame(animate);
+        // uniforms["u_time"].value = (Date.now() - start)/1000;
+        // cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
 
       animate();
     </script>
