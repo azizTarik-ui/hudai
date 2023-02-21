@@ -12,22 +12,6 @@
   <body>
     <script src="js/three.js"></script>
 
-<!-- ShaderMaterial -->
-    <script id="vertexShader" type="x-shader/x-vertex">
-        varying vec3 v_color;
-        void main()	{
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            v_color = position;
-        }
-    </script>
-
-    <script id="fragmentShader" type="x-shader/x-fragment">
-        uniform float u_time;
-        varying vec3 v_color;
-        void main()	{
-           gl_FragColor = vec4(abs(cos(v_color+u_time)), 1.0);
-        }
-    </script>
 
     <!-- creating scene -->
     <script>
@@ -53,34 +37,67 @@
 
 
       //house structure
+      
+    
       const renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
+
+
+      var floorImg = new THREE.TextureLoader().load("./images/floor.jpg");
+      let floor = new THREE.PlaneGeometry(80, 80);
+      const floorMaterial = new THREE.MeshStandardMaterial({
+          map: floorImg
+      });
+      floor = new THREE.Mesh(floor, floorMaterial);
+      floor.rotation.x = (-90 * Math.PI) / 180;
+      floor.receiveShadow = true; //default
+      scene.add(floor);
+      floor.position.set(0, -3, 1.51);
+    
+
+      const cTextures = [
+      "./images/cWall.jpg",
+      "./images/cWall2.jpg",
+      "./images/cWall3.jpg",
+      "./images/cWall4.jpg"
+      ];
+      
+      let cTextureNo = 3;
+      let cTexture = new THREE.TextureLoader().load(
+        cTextures[cTextureNo]
+      );
+
+
+      cTexture.wrapS = THREE.RepeatWrapping;
+      cTexture.wrapT = THREE.RepeatWrapping;
+      cTexture.repeat.set(1, 1);
+      cTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
       const geometry = new THREE.BoxGeometry(3, 3, 3);
-      const positionAttribute = geometry.getAttribute('position');
-      const colors = [];
-      const colorWall = new THREE.Color();
-      for (let i = 0; i < positionAttribute.count; i += 6) {
-
-          colorWall.setHex(0xffffff * Math.random());
-
-          colors.push(colorWall.r, colorWall.g, colorWall.b);
-          colors.push(colorWall.r, colorWall.g, colorWall.b);
-          colors.push(colorWall.r, colorWall.g, colorWall.b);
-
-          colors.push(colorWall.r, colorWall.g, colorWall.b);
-          colors.push(colorWall.r, colorWall.g, colorWall.b);
-          colors.push(colorWall.r, colorWall.g, colorWall.b);
-      } 
-      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-      const material = new THREE.MeshBasicMaterial({ vertexColors: true });
+      const material = new THREE.MeshBasicMaterial({ map: cTexture });
       const cube = new THREE.Mesh(geometry, material);
       cube.rotation.x = 0.25;
       scene.add(cube);
 
       //house roof
+      const rTextures = [
+      "./images/roof.jpg",
+      "./images/roof2.jpg"
+      ];
+      
+      let rTextureNo = 1;
+      let rTexture = new THREE.TextureLoader().load(
+        rTextures[rTextureNo]
+      );
+
+
+      rTexture.wrapS = THREE.RepeatWrapping;
+      rTexture.wrapT = THREE.RepeatWrapping;
+      rTexture.repeat.set(1, 1);
+      rTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      //var roofImg = new THREE.TextureLoader().load("./images/roof.jpg");
       const roofGeometry = new THREE.ConeGeometry(3, 3, 4);
-      const roofMaterial = new THREE.MeshPhongMaterial({ color: 0x00ffff });
+      const roofMaterial = new THREE.MeshPhongMaterial({ map: rTexture });
       const roof = new THREE.Mesh(roofGeometry, roofMaterial);
       roof.position.x = -0.02;
       roof.position.y = 2.5;
@@ -98,60 +115,56 @@
 
       //house windows
       var window1 = new THREE.TextureLoader().load("./images/window.jpg");
+
+
       const windowGeometry1 = new THREE.BoxGeometry(0.5, 0.75, 1);
       const windowMaterial1 = new THREE.MeshPhongMaterial({ map: window1 });
       const window11 = new THREE.Mesh(windowGeometry1, windowMaterial1);
       window11.position.set(1, -0.375, 1.0001);
       cube.add(window11);
 
-      var window2 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry2 = new THREE.BoxGeometry(0.5, 0.75, 1);
-      const windowMaterial2 = new THREE.MeshPhongMaterial({ map: window2 });
+      const windowMaterial2 = new THREE.MeshPhongMaterial({ map: window1 });
       const window22 = new THREE.Mesh(windowGeometry2, windowMaterial2);
       window22.position.set(-1, -0.375, 1.0001);
       cube.add(window22);
 
-      var window3 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry3 = new THREE.BoxGeometry(0.5, 0.75, 0.55);
-      const windowMaterial3 = new THREE.MeshPhongMaterial({ map: window3 });
+      const windowMaterial3 = new THREE.MeshPhongMaterial({ map: window1 });
       const window33 = new THREE.Mesh(windowGeometry3, windowMaterial3);
       window33.position.set(-1.2501, -0.375, -0.1);
       cube.add(window33);
 
-      var window4 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry4 = new THREE.BoxGeometry(0.5, 0.75, 0.55);
-      const windowMaterial4 = new THREE.MeshPhongMaterial({ map: window4 });
+      const windowMaterial4 = new THREE.MeshPhongMaterial({ map: window1 });
       const window44 = new THREE.Mesh(windowGeometry4, windowMaterial4);
       window44.position.set(1.2501, -0.375, 0.1);
       cube.add(window44);
 
-      var window5 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry5 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
-      const windowMaterial5 = new THREE.MeshPhongMaterial({ map: window5 });
+      const windowMaterial5 = new THREE.MeshPhongMaterial({ map: window1 });
       const window55 = new THREE.Mesh(windowGeometry5, windowMaterial5);
       window55.position.set(0, -0.375, -1.2251);
       cube.add(window55);
 
+      let cuniforms = {
+          u_texture: {
+          type: "t", value: cTexture
+        }
+      };
+
+      let runiforms = {
+          u_texture: {
+          type: "t", value: rTexture
+        }
+      };
+
+
 
       //building
+      var bWall = new THREE.TextureLoader().load('./images/bWall.jpg');
       const bGeometry = new THREE.BoxGeometry(2, 7, 2);
-      const positionAttributeB = geometry.getAttribute('position');
-      const colorsB = [];
-      const colorWallB = new THREE.Color();
-      for (let i = 0; i < positionAttributeB.count; i += 6) {
-
-          colorWall.setHex(0xffffff * Math.random());
-
-          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
-          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
-          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
-
-          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
-          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
-          colors.push(colorWallB.r, colorWallB.g, colorWallB.b);
-      } 
-      bGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-      const bMaterial = new THREE.MeshBasicMaterial({ vertexColors: true });
+      const bMaterial = new THREE.MeshBasicMaterial({ map: bWall });
       const bCube = new THREE.Mesh(bGeometry, bMaterial);
       bCube.rotation.x = 0.25;
       scene.add(bCube);
@@ -164,37 +177,32 @@
       bDoor.position.set(0.05, -2.55, 1.001);
       bCube.add(bDoor);
 
-      var window6 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry6 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
-      const windowMaterial6 = new THREE.MeshPhongMaterial({ map: window6 });
+      const windowMaterial6 = new THREE.MeshPhongMaterial({ map: window1 });
       const window66 = new THREE.Mesh(windowGeometry6, windowMaterial6);
       window66.position.set(-0.702, -0.375, 0);
       bCube.add(window66);
 
-      var window7 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry7 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
-      const windowMaterial7 = new THREE.MeshPhongMaterial({ map: window7 });
+      const windowMaterial7 = new THREE.MeshPhongMaterial({ map: window1 });
       const window77 = new THREE.Mesh(windowGeometry7, windowMaterial7);
       window77.position.set(-0.702, 2, 0);
       bCube.add(window77);
 
-      var window8 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry8 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
-      const windowMaterial8 = new THREE.MeshPhongMaterial({ map: window8 });
+      const windowMaterial8 = new THREE.MeshPhongMaterial({ map: window1 });
       const window88 = new THREE.Mesh(windowGeometry8, windowMaterial8);
       window88.position.set(0.702, -0.375, 0);
       bCube.add(window88);
 
-      var window9 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry9 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
-      const windowMaterial9 = new THREE.MeshPhongMaterial({ map: window7 });
+      const windowMaterial9 = new THREE.MeshPhongMaterial({ map: window1 });
       const window99 = new THREE.Mesh(windowGeometry9, windowMaterial9);
       window99.position.set(0.702, 2, 0);
       bCube.add(window99);
 
-      var window10 = new THREE.TextureLoader().load("./images/window.jpg");
       const windowGeometry10 = new THREE.BoxGeometry(0.6, 0.75, 0.55);
-      const windowMaterial10 = new THREE.MeshPhongMaterial({ map: window10 });
+      const windowMaterial10 = new THREE.MeshPhongMaterial({ map: window1 });
       const window101 = new THREE.Mesh(windowGeometry10, windowMaterial10);
       window101.position.set(0, -0.375, -0.727);
       bCube.add(window101);
@@ -228,12 +236,40 @@
 
 
       //mouse interaction
-      let onmousedown = function(){
-          cube.rotation.y += 5;
-          renderer.render(scene, camera);
-      }
+      // let onmousedown = function(){
+      //     cube.rotation.y += 5;
+      //     renderer.render(scene, camera);
+      // }
 
-      document.addEventListener("click", onmousedown, false);
+      // document.addEventListener("click", onmousedown, false);
+
+
+      document.addEventListener("click", (event) => {
+        cTextureNo += 1;
+        cTextureNo = cTextureNo % 4;
+
+        cTexture.dispose();
+        cTexture = new THREE.TextureLoader().load(cTextures[cTextureNo]);
+        cTexture.wrapS = THREE.RepeatWrapping;
+        cTexture.wrapT = THREE.RepeatWrapping;
+        cTexture.repeat.set(1, 1);
+        cTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        material.map = cTexture;
+        cuniforms["u_texture"].value = cTexture;
+
+        rTextureNo += 1;
+        rTextureNo = cTextureNo % 2;
+
+        rTexture.dispose();
+        rTexture = new THREE.TextureLoader().load(rTextures[rTextureNo]);
+        rTexture.wrapS = THREE.RepeatWrapping;
+        rTexture.wrapT = THREE.RepeatWrapping;
+        rTexture.repeat.set(1, 1);
+        rTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        roofMaterial.map = rTexture;
+        runiforms["u_texture"].value = rTexture;
+
+      });
 
       //keyboard interaction
       const arrowLeftKeyCode = 37;
