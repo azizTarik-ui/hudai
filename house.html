@@ -15,6 +15,12 @@
 
     <!-- creating scene -->
     <script>
+
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
         100,
@@ -23,34 +29,28 @@
         1000
       );
 
-      // var start = Date.now();
-      // uniforms = {
-      //     u_time: { type: "f", value: (Date.now() - start)/1000 }
-      // };
-
-      // material = new THREE.ShaderMaterial({
-      //     uniforms: uniforms,
-      //     vertexShader: document.getElementById('vertexShader').textContent,
-      //     fragmentShader: document.getElementById('fragmentShader').textContent
-
-      // });
-
 
       //lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff);
-      scene.add(ambientLight);
+      // const ambientLight = new THREE.AmbientLight(0xffffff);
+      // scene.add(ambientLight);
 
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
       directionalLight.position.set(1, 1, 1);
       scene.add(directionalLight);
 
+      const pointLight = new THREE.PointLight(0xffffff, 1, 1000);
+      pointLight.position.set(100, 150, 4);
+      pointLight.castShadow = true; // default false
+      pointLight.shadow.mapSize.width = 1024;
+      pointLight.shadow.mapSize.height = 1024;
+      scene.add(pointLight);
+
+      const ambientLight = new THREE.AmbientLightProbe(0xffffff, 0.6);
+      ambientLight.position.set(40, 80, 4);
+      scene.add(ambientLight);
+
 
       //house structure
-      const renderer = new THREE.WebGLRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
-
-
       var floorImg = new THREE.TextureLoader().load("./images/floor.jpg");
       let floor = new THREE.PlaneGeometry(80, 80);
       const floorMaterial = new THREE.MeshStandardMaterial({
@@ -58,7 +58,7 @@
       });
       floor = new THREE.Mesh(floor, floorMaterial);
       floor.rotation.x = (-90 * Math.PI) / 180;
-      floor.receiveShadow = true; //default
+      floor.receiveShadow = true; 
       scene.add(floor);
       floor.position.set(0, -3, 1.51);
     
@@ -84,7 +84,6 @@
       const material = new THREE.MeshBasicMaterial({ map: cTexture });
       const cube = new THREE.Mesh(geometry, material);
       cube.rotation.x = 0.25;
-      cube.castShadow = true;
       scene.add(cube);
 
       //house roof
@@ -110,7 +109,6 @@
       roof.position.x = -0.02;
       roof.position.y = 2.5;
       roof.rotation.y = Math.PI / 4; 
-      roof.castShadow = true;
       cube.add(roof);
 
       //house door
@@ -119,7 +117,7 @@
       const doorMaterial = new THREE.MeshBasicMaterial({ map: doorOfHouse });
       const door = new THREE.Mesh(doorGeometry, doorMaterial);
       door.position.set(0, -0.71, 1.51);
-      door.castShadow = true;
+      //door.castShadow = true;
       cube.add(door);
       
 
@@ -178,6 +176,8 @@
       const bCube = new THREE.Mesh(bGeometry, bMaterial);
       bCube.rotation.x = 0.25;
       scene.add(bCube);
+      bCube.castShadow = true;
+      bCube.receiveShadow = false;
       bCube.position.set(8, 1, 0);
 
       var doorOfHouse = new THREE.TextureLoader().load("./images/door.png");
@@ -223,12 +223,6 @@
       window111.position.set(0, 2, -0.727);
       bCube.add(window111);
 
-      
-
-      
-
-      
-
 
       //renderer.render(scene, camera);
 
@@ -238,14 +232,13 @@
       camera.position.y = 0.65;
       camera.position.z = 5;
 
-
-      //mouse interaction
-      // let onmousedown = function(){
-      //     cube.rotation.y += 5;
-      //     renderer.render(scene, camera);
-      // }
-
-      // document.addEventListener("click", onmousedown, false);
+      // let cameraRotationVar = 0.3;
+      // let cameraPositionY = 30;
+      // camera.position.x = Math.sin(cameraRotationVar) * 27;
+      // camera.position.y = cameraPositionY;
+      // camera.position.z = Math.cos(cameraRotationVar) * 27;
+      camera.lookAt(3, 0.65, 5);
+      scene.add(camera);
 
 
       document.addEventListener("click", (event) => {
@@ -310,8 +303,8 @@
         //camera.position.z = 5 * Math.sin(Date.now() * 0.001);
         //camera.position.x = 3 * Math.sin(Date.now() * 0.001);
         //camera.position.z = 5 * Math.sin(Date.now() * 0.001);
-        directionalLight.position.x = 5 * Math.sin(Date.now() * 0.001);
-        directionalLight.position.z = 5 * Math.sin(Date.now() * 0.001);
+        //directionalLight.position.x = 5 * Math.sin(Date.now() * 0.001);
+        //directionalLight.position.z = 5 * Math.sin(Date.now() * 0.001);
         renderer.render(scene, camera);
       }
 
